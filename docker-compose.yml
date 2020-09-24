@@ -1,0 +1,37 @@
+version: '3'
+services:
+ leadwire-apm-server:
+    image: docker.elastic.co/apm/apm-server-oss:7.6.1
+    container_name: leadwire-apm-server
+    volumes:
+    - .docker/leadwire-apm-server/apm-server.yml:/usr/share/apm-server/apm-server.yml 
+    networks:
+      - leadwire-gateway
+    ports:
+      - 8200:8200
+ leadwire-logstash:
+    image: docker.elastic.co/logstash/logstash-oss:7.6.1
+    container_name: leadwire-logstash
+    environment:
+      - JAVA_OPTS=-Xms512m -Xmx1g
+    volumes:
+      - .docker/leadwire-logstash/pipeline/:/usr/share/logstash/pipeline/
+    networks:
+      - leadwire-gateway
+    ports:
+      - 5044:5044
+ leadwire-filebeat:
+    image: docker.elastic.co/beats/filebeat-oss:7.6.1
+    container_name: leadwire-filebeat
+    networks:
+      - leadwire-gateway
+ leadwire-heartbeat:
+    image: docker.elastic.co/beats/heartbeat-oss:7.6.1
+    container_name: leadwire-heartbeat
+    volumes:
+      - .docker/leadwire-heartbeat/usr/share/heartbeat/heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    networks:
+      - leadwire-gateway
+networks:
+  leadwire-gateway:
+
